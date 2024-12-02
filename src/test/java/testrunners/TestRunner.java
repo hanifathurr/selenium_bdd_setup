@@ -7,10 +7,10 @@ import io.cucumber.testng.CucumberOptions;
         features = "src/test/resources/features",
         glue = {"stepdefinitions", "hooks"},
         plugin = {
-                "json:target/cucumber-reports/CucumberTestReport.json",
-                "html:target/cucumber-reports"
-        },
-        tags = "@regression" // Tag for filtering scenarios
+                "json:src/test/java/testreports/json/CucumberTestReport.json",
+                "html:src/test/java/testreports/CucumberTestReport.html"
+        }
+//        tags = "@regression" // Tag for filtering scenarios
 )
 public class TestRunner extends AbstractTestNGCucumberTests {
 }
