@@ -1,0 +1,26 @@
+2024-12-02 21:03:04 [main] INFO : Initializing browser setup...
+2024-12-02 21:03:07 [main] INFO : Browser initialized: chrome
+2024-12-02 21:03:07 [main] INFO : Timeouts set: Implicit - 10 seconds, Page Load - 30 seconds
+2024-12-02 21:03:07 [main] INFO : Navigated to homepage: https://www.saucedemo.com/v1/
+2024-12-02 21:03:07 [main] INFO : Tearing down the browser...
+2024-12-02 21:03:08 [main] INFO : Browser closed successfully.
+2024-12-02 21:08:02 [main] INFO : Initializing browser setup...
+2024-12-02 21:08:04 [main] INFO : Browser initialized: chrome
+2024-12-02 21:08:04 [main] INFO : Timeouts set: Implicit - 10 seconds, Page Load - 30 seconds
+2024-12-02 21:08:04 [main] INFO : Navigated to homepage: https://www.saucedemo.com/v1/
+2024-12-02 21:08:04 [main] INFO : GeneralHelper initialized with driver: ChromeDriver: chrome on windows (a306c3154dec1e61f45537c2c433c31e) and timeout: 10 seconds
+2024-12-02 21:08:04 [main] INFO : Assertion Passed: Page title matches expected title: 'Swag Labs'
+2024-12-02 21:08:04 [main] INFO : Assertion Passed: Current URL matches expected URL: 'https://www.saucedemo.com/v1/'
+2024-12-02 21:08:04 [main] INFO : Assertion Passed: Element is not displayed.
+2024-12-02 21:08:04 [main] INFO : Assertion Passed: Element is not displayed.
+2024-12-02 21:08:04 [main] INFO : Assertion Passed: Element is not displayed.
+2024-12-02 21:08:04 [main] INFO : Filling text 'standard_user' in element: [[ChromeDriver: chrome on windows (a306c3154dec1e61f45537c2c433c31e)] -> id: user-name]
+2024-12-02 21:08:04 [main] INFO : Filled text in element: [[ChromeDriver: chrome on windows (a306c3154dec1e61f45537c2c433c31e)] -> id: user-name]
+2024-12-02 21:08:04 [main] INFO : Filling text 'secret_sauce' in element: [[ChromeDriver: chrome on windows (a306c3154dec1e61f45537c2c433c31e)] -> id: password]
+2024-12-02 21:08:05 [main] INFO : Filled text in element: [[ChromeDriver: chrome on windows (a306c3154dec1e61f45537c2c433c31e)] -> id: password]
+2024-12-02 21:08:05 [main] INFO : Clicking on element: [[ChromeDriver: chrome on windows (a306c3154dec1e61f45537c2c433c31e)] -> id: login-button]
+2024-12-02 21:08:15 [main] INFO : Clicked on element: Proxy element for: DefaultElementLocator 'By.id: login-button'
+2024-12-02 21:08:15 [main] INFO : Assertion Passed: Page title matches expected title: 'Swag Labs'
+2024-12-02 21:08:15 [main] INFO : Assertion Passed: Current URL matches expected URL: 'https://www.saucedemo.com/v1/inventory.html'
+2024-12-02 21:08:15 [main] INFO : Tearing down the browser...
+2024-12-02 21:08:15 [main] INFO : Browser closed successfully.

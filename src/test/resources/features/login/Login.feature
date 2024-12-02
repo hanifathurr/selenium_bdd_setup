@@ -1,6 +1,6 @@
 Feature: Login gan
 
-  Scenario: Login dulu ga sih
-    Given Masuk homepage
-    When Login pake akun
-    Then Masuk ke webnya
+  Scenario: User logs in successfully
+    Given User is on the Login page
+    When User logs in using username "standard_user" and password "secret_sauce"
+    Then User redirected to the Inventory page
