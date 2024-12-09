@@ -32,9 +32,8 @@ src
 │   │   ├── hooks               # Cucumber Hooks for setup and teardown
 │   │   ├── stepdefinitions     # Cucumber Step Definitions
 │   │   ├── testrunners         # TestNG runner classes
-│   │   └── resources           # Cucumber feature files
 │   └── resources
-│       └── features            # Feature files written in Gherkin syntax
+│       └── features            # Cucumber Feature files written in Gherkin syntax
 ```
 
 ---
