@@ -72,7 +72,7 @@ public class AssertionHelper {
      * @param element the WebElement to check
      */
     public void assertElementDisplayed(WebElement element) {
-        assertElementCondition(element.isDisplayed(), "Element is not displayed.");
+        assertElementCondition(element.isDisplayed(), "Element is displayed.");
     }
 
     /**

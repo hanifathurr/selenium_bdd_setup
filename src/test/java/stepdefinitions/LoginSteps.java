@@ -35,8 +35,8 @@ public class LoginSteps {
         loginPage.clickLoginButton();
     }
 
-    @Then("User redirected to the Inventory page")
-    public void userRedirectedToTheInventorypage() {
+    @Then("User redirected to the Product page")
+    public void userRedirectedToTheProductpage() {
         loginPage.verifyLoginSuccessful();
     }
 }

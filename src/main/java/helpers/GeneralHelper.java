@@ -130,7 +130,7 @@ public class GeneralHelper {
     }
 
     /**
-     * Double clicks on the provided element.
+     * Double-clicks on the provided element.
      *
      * @param element the WebElement to double-click
      */
