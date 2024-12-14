@@ -2,6 +2,7 @@ package helpers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -13,7 +14,7 @@ import utilities.config.PropertyFileReader;
 import java.time.Duration;
 
 public class GeneralHelper {
-    private static final Logger logger = LogManager.getLogger(GeneralHelper.class);  // Initialize the logger
+    private static final Logger logger = LogManager.getLogger(GeneralHelper.class);
     private static final PropertyFileReader config = new PropertyFileReader();
     private final WebDriver driver;
     private final WebDriverWait wait;
@@ -24,165 +25,190 @@ public class GeneralHelper {
         int waitDuration = config.getDefaultWaitDuration();
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(waitDuration));
         this.actions = new Actions(driver);
-        logger.info("GeneralHelper initialized with driver: {} and timeout: {} seconds", driver, waitDuration);  // Log the initialization
+        logger.info("GeneralHelper initialized with driver instance hash: {} and timeout: {} seconds", System.identityHashCode(driver), waitDuration);
     }
 
     /**
-     * Waits for the element to be visible and returns it.
+     * Waits for the element (located by a By locator or WebElement) to be visible and returns it.
      *
-     * @param element the WebElement to be waited for
+     * @param locator the By locator or WebElement to be waited for
      * @return the visible WebElement
      */
-    public WebElement getElement(WebElement element) {
-        logger.debug("Waiting for visibility of element: {}", element);
+    public WebElement getElement(Object locator) {
+        logger.debug("Waiting for visibility of locator: {}", locator);
         try {
+            WebElement element = resolveLocator(locator);
             WebElement visibleElement = wait.until(ExpectedConditions.visibilityOf(element));
             logger.debug("Element is now visible: {}", visibleElement);
             return visibleElement;
         } catch (NoSuchElementException e) {
-            logger.error("Element not found: {}. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the specific exception
+            logger.error("Element not found: {}. Exception: {}", locator, e.getMessage());
+            throw e;
         } catch (Exception e) {
-            logger.error("Error while waiting for visibility of element: {}. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the exception to allow higher-level handling
+            logger.error("Error while waiting for visibility of locator: {}. Exception: {}", locator, e.getMessage());
+            throw e;
         }
     }
 
     /**
-     * Clicks on the provided element.
+     * Resolves a locator (By or WebElement) to a visible WebElement.
      *
-     * @param element the WebElement to be clicked
+     * @param locator the locator to resolve
+     * @return the visible WebElement
      */
-    public void click(WebElement element) {
-        logger.info("Clicking on element: {}", element);
-        try {
-            getElement(element).click();
-            logger.info("Clicked on element: {}", element);
-        } catch (NoSuchElementException e) {
-            logger.error("Failed to click on element: {}. Element not found. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the specific exception for test-level handling
-        } catch (Exception e) {
-            logger.error("Failed to click on element: {}. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the exception for test-level handling
+    private WebElement resolveLocator(Object locator) {
+        if (locator instanceof By) {
+            logger.debug("Resolving locator as By: {}", locator);
+            return driver.findElement((By) locator);
+        } else if (locator instanceof WebElement) {
+            logger.debug("Locator is already a WebElement: {}", locator);
+            return (WebElement) locator;
+        } else {
+            throw new IllegalArgumentException("Locator must be of type By or WebElement.");
         }
     }
 
     /**
-     * Enters text into the provided element.
+     * Clicks on the provided element (By locator or WebElement).
      *
-     * @param element the WebElement to fill text into
+     * @param locator the By locator or WebElement to be clicked
+     */
+    public void click(Object locator) {
+        logger.info("Clicking on locator: {}", locator);
+        try {
+            scrollToElement(locator);
+            getElement(locator).click();
+            logger.info("Clicked on locator: {}", locator);
+        } catch (NoSuchElementException e) {
+            logger.error("Failed to click on locator: {}. Element not found. Exception: {}", locator, e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Failed to click on locator: {}. Exception: {}", locator, e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * Enters text into the provided element (By locator or WebElement).
+     *
+     * @param locator the By locator or WebElement to fill text into
      * @param text    the text to enter
      */
-    public void fillText(WebElement element, String text) {
-        logger.info("Filling text '{}' in element: {}", text, element);
+    public void fillText(Object locator, String text) {
+        logger.info("Filling text '{}' in locator: {}", text, locator);
         try {
-            WebElement visibleElement = getElement(element);
+            scrollToElement(locator);
+            WebElement visibleElement = getElement(locator);
             visibleElement.clear();
             visibleElement.sendKeys(text);
-            logger.info("Filled text in element: {}", element);
+            logger.info("Filled text in locator: {}", locator);
         } catch (NoSuchElementException e) {
-            logger.error("Failed to fill text in element: {}. Element not found. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the specific exception for test-level handling
+            logger.error("Failed to fill text in locator: {}. Element not found. Exception: {}", locator, e.getMessage());
+            throw e;
         } catch (Exception e) {
-            logger.error("Failed to fill text in element: {}. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the exception for test-level handling
+            logger.error("Failed to fill text in locator: {}. Exception: {}", locator, e.getMessage());
+            throw e;
         }
     }
 
     /**
-     * Clears the text from the provided element.
+     * Clears the text from the provided element (By locator or WebElement).
      *
-     * @param element the WebElement to clear text from
+     * @param locator the By locator or WebElement to clear text from
      */
-    public void clearText(WebElement element) {
-        logger.info("Clearing text in element: {}", element);
+    public void clearText(Object locator) {
+        logger.info("Clearing text in locator: {}", locator);
         try {
-            getElement(element).clear();
-            logger.info("Cleared text in element: {}", element);
+            scrollToElement(locator);
+            getElement(locator).clear();
+            logger.info("Cleared text in locator: {}", locator);
         } catch (NoSuchElementException e) {
-            logger.error("Failed to clear text in element: {}. Element not found. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throw ing the specific exception for test-level handling
+            logger.error("Failed to clear text in locator: {}. Element not found. Exception: {}", locator, e.getMessage());
+            throw e;
         } catch (Exception e) {
-            logger.error("Failed to clear text in element: {}. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the exception for test-level handling
+            logger.error("Failed to clear text in locator: {}. Exception: {}", locator, e.getMessage());
+            throw e;
         }
     }
 
     /**
-     * Gets the text from the provided element.
+     * Gets the text from the provided element (By locator or WebElement).
      *
-     * @param element the WebElement to retrieve text from
+     * @param locator the By locator or WebElement to retrieve text from
      * @return the text of the element
      */
-    public String getText(WebElement element) {
-        logger.info("Getting text from element: {}", element);
+    public String getText(Object locator) {
+        logger.info("Getting text from locator: {}", locator);
         try {
-            String text = getElement(element).getText();
-            logger.info("Retrieved text: '{}' from element: {}", text, element);
+            scrollToElement(locator);
+            String text = getElement(locator).getText();
+            logger.info("Retrieved text: '{}' from locator: {}", text, locator);
             return text;
         } catch (NoSuchElementException e) {
-            logger.error("Failed to get text from element: {}. Element not found. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the specific exception for test-level handling
+            logger.error("Failed to get text from locator: {}. Element not found. Exception: {}", locator, e.getMessage());
+            throw e;
         } catch (Exception e) {
-            logger.error("Failed to get text from element: {}. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the exception for test-level handling
+            logger.error("Failed to get text from locator: {}. Exception: {}", locator, e.getMessage());
+            throw e;
         }
     }
 
     /**
-     * Double-clicks on the provided element.
+     * Double-clicks on the provided element (By locator or WebElement).
      *
-     * @param element the WebElement to double-click
+     * @param locator the By locator or WebElement to double-click
      */
-    public void doubleClick(WebElement element) {
-        logger.info("Double-clicking on element: {}", element);
+    public void doubleClick(Object locator) {
+        logger.info("Double-clicking on locator: {}", locator);
         try {
-            actions.doubleClick(getElement(element)).perform();
-            logger.info("Double-clicked on element: {}", element);
+            scrollToElement(locator);
+            actions.doubleClick(getElement(locator)).perform();
+            logger.info("Double-clicked on locator: {}", locator);
         } catch (NoSuchElementException e) {
-            logger.error("Failed to double-click on element: {}. Element not found. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the specific exception for test-level handling
+            logger.error("Failed to double-click on locator: {}. Element not found. Exception: {}", locator, e.getMessage());
+            throw e;
         } catch (Exception e) {
-            logger.error("Failed to double-click on element: {}. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the exception for test-level handling
+            logger.error("Failed to double-click on locator: {}. Exception: {}", locator, e.getMessage());
+            throw e;
         }
     }
 
     /**
-     * Scrolls to the provided element.
+     * Scrolls to the provided element (By locator or WebElement).
      *
-     * @param element the WebElement to scroll to
+     * @param locator the By locator or WebElement to scroll to
      */
-    public void scrollToElement(WebElement element) {
-        logger.info("Scrolling to element: {}", element);
+    public void scrollToElement(Object locator) {
+        logger.info("Scrolling to locator: {}", locator);
         try {
-            actions.moveToElement(getElement(element)).perform();
-            logger.info("Scrolled to element: {}", element);
+            actions.moveToElement(resolveLocator(locator)).perform();
+            logger.info("Scrolled to locator: {}", locator);
         } catch (NoSuchElementException e) {
-            logger.error("Failed to scroll to element: {}. Element not found. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the specific exception for test-level handling
+            logger.error("Failed to scroll to locator: {}. Element not found. Exception: {}", locator, e.getMessage());
+            throw e;
         } catch (Exception e) {
-            logger.error("Failed to scroll to element: {}. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the exception for test-level handling
+            logger.error("Failed to scroll to locator: {}. Exception: {}", locator, e.getMessage());
+            throw e;
         }
     }
 
     /**
-     * Focuses on the provided element and clicks it.
+     * Focuses on the provided element (By locator or WebElement) and clicks it.
      *
-     * @param element the WebElement to focus on and click
+     * @param locator the By locator or WebElement to focus on and click
      */
-    public void focusOnElement(WebElement element) {
-        logger.info("Focusing on element: {}", element);
+    public void focusOnElement(Object locator) {
+        logger.info("Focusing on locator: {}", locator);
         try {
-            actions.moveToElement(getElement(element)).click().perform();
-            logger.info("Focused on element and clicked: {}", element);
+            scrollToElement(locator);
+            actions.moveToElement(getElement(locator)).click().perform();
+            logger.info("Focused on locator and clicked: {}", locator);
         } catch (NoSuchElementException e) {
-            logger.error("Failed to focus on and click element: {}. Element not found. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the specific exception for test-level handling
+            logger.error("Failed to focus on and click locator: {}. Element not found. Exception: {}", locator, e.getMessage());
+            throw e;
         } catch (Exception e) {
-            logger.error("Failed to focus on and click element: {}. Exception: {}", element, e.getMessage());
-            throw e;  // Re-throwing the exception for test-level handling
+            logger.error("Failed to focus on and click locator: {}. Exception: {}", locator, e.getMessage());
+            throw e;
         }
     }
 
@@ -198,7 +224,7 @@ public class GeneralHelper {
             logger.info("Navigated to URL: {}", url);
         } catch (Exception e) {
             logger.error("Failed to navigate to URL: {}. Exception: {}", url, e.getMessage());
-            throw e;  // Re-throwing the exception for test-level handling
+            throw e;
         }
     }
 
@@ -212,7 +238,7 @@ public class GeneralHelper {
             logger.info("Navigated back in the browser.");
         } catch (Exception e) {
             logger.error("Failed to navigate back in the browser. Exception: {}", e.getMessage());
-            throw e;  // Re-throwing the exception for test-level handling
+            throw e;
         }
     }
 
@@ -226,7 +252,7 @@ public class GeneralHelper {
             logger.info("Navigated forward in the browser.");
         } catch (Exception e) {
             logger.error("Failed to navigate forward in the browser. Exception: {}", e.getMessage());
-            throw e;  // Re-throwing the exception for test-level handling
+            throw e;
         }
     }
 
@@ -240,7 +266,7 @@ public class GeneralHelper {
             logger.info("Page refreshed.");
         } catch (Exception e) {
             logger.error("Failed to refresh the page. Exception: {}", e.getMessage());
-            throw e;  // Re-throwing the exception for test-level handling
+            throw e;
         }
     }
 
@@ -255,8 +281,8 @@ public class GeneralHelper {
             logger.info("Current URL: {}", currentUrl);
             return currentUrl;
         } catch (Exception e) {
-            logger.error("Failed to retrieve current URL. Exception: {}", e.getMessage());
-            throw e;  // Re-throwing the exception for test-level handling
+            logger.error("Failed to retrieve current URL. Exception");
+            throw e;
         }
     }
 }

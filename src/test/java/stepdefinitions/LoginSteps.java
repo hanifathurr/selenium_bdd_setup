@@ -17,7 +17,6 @@ public class LoginSteps {
     private LoginPO loginPage;
 
     public LoginSteps() {
-        // Get the PageObjectManager from Hooks
         this.driver = GetDriverManager.getDriver(config.getBrowser());
         this.pageObjectManager = new PageObjectManager(driver);
         this.loginPage = pageObjectManager.getLoginPage();
